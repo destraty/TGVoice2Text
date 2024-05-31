@@ -4,7 +4,6 @@ import soundfile as sf
 from telebot import TeleBot
 from pydub import AudioSegment
 import dotenv
-# Замените 'YOUR_BOT_TOKEN' на токен вашего бота
 
 dotenv.load_dotenv()
 
