@@ -11,15 +11,14 @@ from recasepunc import Config
 
 dotenv.load_dotenv()
 
-predictor = CasePuncPredictor('checkpoint', lang="ru")
-
 # Токен бота
 bot = TeleBot(os.getenv('TOKEN'))
 # Путь к директории, куда будут сохраняться файлы
 DOWNLOAD_DIR = os.getenv("DOWNLOAD_DIR")
-# Загрузка модели Vosk
+# Загрузка распознавания Vosk
 model = vosk.Model(os.getenv("MODEL_DIR"))
-
+# Модель пунктуации Vosk
+predictor = CasePuncPredictor('checkpoint', lang="ru")
 print("DONE")
 
 if not os.path.exists(DOWNLOAD_DIR):

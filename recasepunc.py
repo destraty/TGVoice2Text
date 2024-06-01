@@ -12,7 +12,6 @@ import unicodedata
 import numpy as np
 import argparse
 from torch.utils.data import TensorDataset, DataLoader
-
 from transformers import AutoModel, AutoTokenizer, BertTokenizer
 
 default_config = argparse.Namespace(
