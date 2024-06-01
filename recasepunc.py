@@ -2,7 +2,6 @@ import sys
 import collections
 import os
 import regex as re
-#from mosestokenizer import *
 from tqdm import tqdm
 import torch
 import torch.nn as nn

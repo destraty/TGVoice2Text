@@ -12,6 +12,7 @@ from recasepunc import Config
 dotenv.load_dotenv()
 
 predictor = CasePuncPredictor('checkpoint', lang="ru")
+
 # Токен бота
 bot = TeleBot(os.getenv('TOKEN'))
 # Путь к директории, куда будут сохраняться файлы
@@ -42,7 +43,6 @@ def s2t(audio_file: str):
                 pass
             else:
                 pass
-                # print(rec.PartialResult())
                 print(eval(rec.PartialResult())["partial"])
         res = eval(rec.Result())["text"]
         tokens = list(enumerate(predictor.tokenize(res)))
@@ -54,8 +54,8 @@ def s2t(audio_file: str):
                 results = results + ' ' + prediction
             else:
                 results = results + prediction
-        print(res)
-        print(results.strip())
+        # print(res)
+        # print(results.strip())
         return str(results.strip())
 
 
@@ -78,14 +78,14 @@ def handle_docs_photo(message):
         new_file.write(downloaded_file)
 
     oga_to_mono_wav(f"{DOWNLOAD_DIR}/{fn}", f"{DOWNLOAD_DIR}/{fn[:(len(fn) - 4)]}.wav")
-    # os.remove(f'{DOWNLOAD_DIR}/{fn}')
+    os.remove(f'{DOWNLOAD_DIR}/{fn}')
     text = s2t(f"{DOWNLOAD_DIR}/{fn[:(len(fn) - 4)]}.wav")
     bot.reply_to(message, f"Ваш текст: {text}")
 
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
-    bot.reply_to(message, "Привет Отправь мне голосовое или видео сообщение, и я сохраним его.")
+    bot.reply_to(message, "Привет Отправь мне голосовое и я его переведу в текст")
 
 
 bot.polling()
