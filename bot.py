@@ -1,22 +1,25 @@
 import os
-import vosk
-import soundfile as sf
-from telebot import TeleBot
-from pydub import AudioSegment
+
 import dotenv
+import soundfile as sf
+import vosk
+from pydub import AudioSegment
+from telebot import TeleBot
+from recasepunc import CasePuncPredictor
+from recasepunc import WordpieceTokenizer
+from recasepunc import Config
 
 dotenv.load_dotenv()
 
-TOKEN = os.getenv('TOKEN')
-bot = TeleBot(TOKEN)
-
-# Загрузка модели Vosk
-
-model = vosk.Model("C:\models\model_big")
-print("DONE")
-
+predictor = CasePuncPredictor('checkpoint', lang="ru")
+# Токен бота
+bot = TeleBot(os.getenv('TOKEN'))
 # Путь к директории, куда будут сохраняться файлы
-DOWNLOAD_DIR = './downloads'
+DOWNLOAD_DIR = os.getenv("DOWNLOAD_DIR")
+# Загрузка модели Vosk
+model = vosk.Model(os.getenv("MODEL_DIR"))
+
+print("DONE")
 
 if not os.path.exists(DOWNLOAD_DIR):
     os.makedirs(DOWNLOAD_DIR)
@@ -42,8 +45,18 @@ def s2t(audio_file: str):
                 # print(rec.PartialResult())
                 print(eval(rec.PartialResult())["partial"])
         res = eval(rec.Result())["text"]
+        tokens = list(enumerate(predictor.tokenize(res)))
+
+        results = ""
+        for token, case_label, punc_label in predictor.predict(tokens, lambda x: x[1]):
+            prediction = predictor.map_punc_label(predictor.map_case_label(token[1], case_label), punc_label)
+            if token[1][0] != '#':
+                results = results + ' ' + prediction
+            else:
+                results = results + prediction
         print(res)
-        return str(res)
+        print(results.strip())
+        return str(results.strip())
 
 
 def oga_to_mono_wav(input_file_path, output_file_path):
@@ -52,6 +65,7 @@ def oga_to_mono_wav(input_file_path, output_file_path):
     silence = AudioSegment.silent(duration=4000)  # Создание 4 секунд тишины
     final_audio = mono_audio + silence  # Добавление тишины к аудио
     final_audio.export(output_file_path, format="wav")  # Экспорт в формат WAV
+
 
 @bot.message_handler(content_types=['voice', 'video'])
 def handle_docs_photo(message):
@@ -63,9 +77,9 @@ def handle_docs_photo(message):
     with open(os.path.join(DOWNLOAD_DIR, fn), 'wb') as new_file:
         new_file.write(downloaded_file)
 
-    oga_to_mono_wav(f"./downloads/{fn}", f"./downloads/{fn[:(len(fn) - 4)]}.wav")
-    os.remove(f'./downloads/{fn}')
-    text = s2t(f"./downloads/{fn[:(len(fn) - 4)]}.wav")
+    oga_to_mono_wav(f"{DOWNLOAD_DIR}/{fn}", f"{DOWNLOAD_DIR}/{fn[:(len(fn) - 4)]}.wav")
+    # os.remove(f'{DOWNLOAD_DIR}/{fn}')
+    text = s2t(f"{DOWNLOAD_DIR}/{fn[:(len(fn) - 4)]}.wav")
     bot.reply_to(message, f"Ваш текст: {text}")
 
 
