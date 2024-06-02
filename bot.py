@@ -6,7 +6,7 @@ import vosk
 from pydub import AudioSegment
 from telebot import TeleBot
 from recasepunc import CasePuncPredictor
-from recasepunc import WordpieceTokenizer
+from recasepunc import WordpieceTokenizer  # НЕ УДАЛЯТЬ
 from recasepunc import Config
 
 dotenv.load_dotenv()
@@ -16,9 +16,9 @@ bot = TeleBot(os.getenv('TOKEN'))
 # Путь к директории, куда будут сохраняться файлы
 DOWNLOAD_DIR = os.getenv("DOWNLOAD_DIR")
 # Загрузка распознавания Vosk
-model = vosk.Model(os.getenv("MODEL_DIR"))
+model = vosk.Model(os.getenv("SPEECH_MODEL_PATH"))
 # Модель пунктуации Vosk
-predictor = CasePuncPredictor('checkpoint', lang="ru")
+predictor = CasePuncPredictor(os.getenv("PUNC_MODEL_PATH"), lang="ru")
 print("DONE")
 
 if not os.path.exists(DOWNLOAD_DIR):
@@ -53,8 +53,7 @@ def s2t(audio_file: str):
                 results = results + ' ' + prediction
             else:
                 results = results + prediction
-        # print(res)
-        # print(results.strip())
+
         return str(results.strip())
 
 
@@ -66,8 +65,8 @@ def oga_to_mono_wav(input_file_path, output_file_path):
     final_audio.export(output_file_path, format="wav")  # Экспорт в формат WAV
 
 
-@bot.message_handler(content_types=['voice', 'video'])
-def handle_docs_photo(message):
+@bot.message_handler(content_types=['voice'])  # TODO , 'video'
+def voice_message_handler(message):
     file_info = bot.get_file(message.voice.file_id if message.content_type == 'voice' else message.video.file_id)
     downloaded_file = bot.download_file(file_info.file_path)
 
@@ -79,10 +78,10 @@ def handle_docs_photo(message):
     oga_to_mono_wav(f"{DOWNLOAD_DIR}/{fn}", f"{DOWNLOAD_DIR}/{fn[:(len(fn) - 4)]}.wav")
     os.remove(f'{DOWNLOAD_DIR}/{fn}')
     text = s2t(f"{DOWNLOAD_DIR}/{fn[:(len(fn) - 4)]}.wav")
-    bot.reply_to(message, f"Ваш текст: {text}")
+    bot.reply_to(message, f"{text}")
 
 
-@bot.message_handler(commands=['start', 'help'])
+@bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.reply_to(message, "Привет Отправь мне голосовое и я его переведу в текст")
 

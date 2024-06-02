@@ -10,3 +10,4 @@ regex~=2024.5.15
 tqdm~=4.66.4
 pyTelegramBotAPI~=4.18.1
 torch~=2.3.0
+tokenizer~=3.4.3
