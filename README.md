@@ -27,9 +27,13 @@ pip install -r requirements.txt
 5. Скачайте модели [распознавания речи](https://alphacephei.com/vosk/models/vosk-model-ru-0.10.zip) и [пунктуации](https://alphacephei.com/vosk/models/vosk-recasepunc-ru-0.22.zip)
 6. Распакуйте их в любое удобное место.
 7. Сконфиругируйте файл .env и укажите пути для обоих моделей по своему желанию. Хранить их на рабочем столе настоятельно **НЕ РЕКОМЕНДУЕТСЯ!**
+- Для ```TOKEN``` укажите токен вашего бота телеграмм. Получить его можно у [BotFather](https://t.me/botfather). Текствая/видео инструкция [тут](https://help.zoho.com/portal/en/kb/desk/support-channels/instant-messaging/telegram/articles/telegram-integration-with-zoho-desk#How_to_create_a_Telegram_Bot)
 - Для ```SPEECH_MODEL_PATH``` укажите путь к папке с моделью.
 - Для ```PUNC_MODEL_PATH``` укажите путь к файлу checkpoint.
+
 8. Запустите бота
 ```bash
 python bot.py
 ```
+
+Дождитесь вывода ```DONE``` и пользуйтесь своим ботом)
