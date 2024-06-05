@@ -26,6 +26,11 @@ if not os.path.exists(DOWNLOAD_DIR):
 
 
 def s2t(audio_file: str):
+    """
+    Переводит аудио в текст
+    :param audio_file: путь к файлу
+    :return: строка с расшифровкой текста и пунктуацией
+    """
     with sf.SoundFile(audio_file) as sound_file:
         # Получение параметров аудиофайла
         samplerate = sound_file.samplerate
@@ -36,13 +41,10 @@ def s2t(audio_file: str):
             data = sound_file.read(-1, dtype="int16")
             if len(data) == 0:
                 break
-            # Преобразование numpy.ndarray в байты
             data_bytes = data.tobytes()
             if rec.AcceptWaveform(data_bytes):
-                pass
-            else:
-                pass
-                print(eval(rec.PartialResult())["partial"])
+                continue
+
         res = eval(rec.Result())["text"]
         tokens = list(enumerate(predictor.tokenize(res)))
 
@@ -57,17 +59,24 @@ def s2t(audio_file: str):
         return str(results.strip())
 
 
-def oga_to_mono_wav(input_file_path, output_file_path):
-    audio = AudioSegment.from_ogg(input_file_path)
+def to_mono_wav(input_file_path: str,
+                output_file_path: str):
+    if input_file_path.endswith(".oga"):
+        audio = AudioSegment.from_ogg(input_file_path)
+    elif input_file_path.endswith(".mp4"):
+        audio = AudioSegment.from_file(input_file_path, format="mp4")
+    else:
+        raise TypeError("Input files must be only .oga or .mp4 formats")
+
     mono_audio = audio.set_channels(1)  # Преобразование в моно
     silence = AudioSegment.silent(duration=4000)  # Создание 4 секунд тишины
     final_audio = mono_audio + silence  # Добавление тишины к аудио
     final_audio.export(output_file_path, format="wav")  # Экспорт в формат WAV
 
 
-@bot.message_handler(content_types=['voice'])  # TODO , 'video'
+@bot.message_handler(content_types=['voice', 'video_note'])
 def voice_message_handler(message):
-    file_info = bot.get_file(message.voice.file_id if message.content_type == 'voice' else message.video.file_id)
+    file_info = bot.get_file(message.voice.file_id if message.content_type == 'voice' else message.video_note.file_id)
     downloaded_file = bot.download_file(file_info.file_path)
 
     # Сохраняем файл в локальную директорию
@@ -75,10 +84,13 @@ def voice_message_handler(message):
     with open(os.path.join(DOWNLOAD_DIR, fn), 'wb') as new_file:
         new_file.write(downloaded_file)
 
-    oga_to_mono_wav(f"{DOWNLOAD_DIR}/{fn}", f"{DOWNLOAD_DIR}/{fn[:(len(fn) - 4)]}.wav")
+    to_mono_wav(f"{DOWNLOAD_DIR}/{fn}", f"{DOWNLOAD_DIR}/{fn[:(len(fn) - 4)]}.wav")
     os.remove(f'{DOWNLOAD_DIR}/{fn}')
     text = s2t(f"{DOWNLOAD_DIR}/{fn[:(len(fn) - 4)]}.wav")
-    bot.reply_to(message, f"{text}")
+    if text:
+        bot.reply_to(message, f"{text}")
+    else:
+        bot.reply_to(message, f"Не удалось распознать.")
 
 
 @bot.message_handler(commands=['start'])
