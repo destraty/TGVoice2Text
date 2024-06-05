@@ -4,10 +4,10 @@
 С помощью данного бота вам больше не придется часами слушать голосовые и смотреть кружочки в телеграмме. Благодаря нейросетям можно ~~быстро~~ бесплатно перевести голосовые и кружочки в текст.
 
 # Содержание 
-1. [Как это работает?]()
-2. [Минимальные системные требования]()
-3. [Установка на Windows]()
-4. [Установка на Linux]()
+1. [Как это работает?](https://github.com/destraty/TGVoice2Text/tree/master?tab=readme-ov-file#%D0%BA%D0%B0%D0%BA-%D1%8D%D1%82%D0%BE-%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D0%B5%D1%82)
+2. [Минимальные системные требования](https://github.com/destraty/TGVoice2Text/tree/master?tab=readme-ov-file#%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%BD%D1%8B%D0%B5-%D1%82%D1%80%D0%B5%D0%B1%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F)
+3. [Установка на Windows](https://github.com/destraty/TGVoice2Text/tree/master?tab=readme-ov-file#windows)
+4. [Установка на Linux](https://github.com/destraty/TGVoice2Text/tree/master?tab=readme-ov-file#linux)
 5. [Материалы для изучения]()
 
 ### Как это работает?
@@ -128,3 +128,5 @@ sudo systemctl start v2t_bot.service
 ```shell
 sudo systemctl status v2t_bot.service
 ```
+
+# Теория и материалы
