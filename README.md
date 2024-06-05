@@ -129,4 +129,12 @@ sudo systemctl start v2t_bot.service
 sudo systemctl status v2t_bot.service
 ```
 
+P.S В случае вылета из-за нехватки ОЗУ, добавьте в ```v2t_bot.service``` в раздел ```[Service]``` данную строку. Значение 2G можно заменить на свое.
+```shell
+MemoryLimit=2G
+```
+Не забудьте выполнить после созранения:
+```shell
+sudo systemctl daemon-reload
+```
 # Теория и материалы
